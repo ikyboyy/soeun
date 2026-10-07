@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E0475B">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Table Talk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&family=Jua&family=Gowun+Dodum&display=swap">
+<style>
+/* Layout: one phone on the table between two people — a cover, then a single card deck with the draw button in thumb reach. */
+:root {
+  --bg: #E9ECF5;
+  --paper: #FFFFFF;
+  --ink: #1D2042;
+  --muted: #5F6488;
+  --line: #CDD2E4;
+  --accent: #E0475B;
+  --accent-ink: #FFFFFF;
+  --blush: #FFD3DC;
+  --shadow: 0 1px 0 rgba(29,32,66,.06), 0 18px 40px -18px rgba(29,32,66,.35);
+  --c-warm: #F2A541; --c-know: #4C8BF5; --c-wyr: #8E5CF0; --c-story: #19A97B; --c-dream: #E46FB0; --c-deep: #3D4A8F; --c-us: #E0475B; --c-scen: #0E9AA7; --c-dare: #F06A2A; --c-faith: #B8860B;
+  --display: "Bricolage Grotesque", "Jua", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --body: "Figtree", "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12132A; --paper: #1E2044; --ink: #EDEBF7; --muted: #A3A7C9; --line: #34386A;
+  --accent: #FF6B7D; --accent-ink: #1A0B10; --blush: #3E2048;
+  --shadow: 0 1px 0 rgba(0,0,0,.3), 0 18px 40px -18px rgba(0,0,0,.8);
+  --c-deep: #8C99E8; --c-faith: #E0B54A; --c-scen: #2EC4CF; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #12132A; --paper: #1E2044; --ink: #EDEBF7; --muted: #A3A7C9; --line: #34386A;
+  --accent: #FF6B7D; --accent-ink: #1A0B10; --blush: #3E2048;
+  --shadow: 0 1px 0 rgba(0,0,0,.3), 0 18px 40px -18px rgba(0,0,0,.8);
+  --c-deep: #8C99E8; --c-faith: #E0B54A; --c-scen: #2EC4CF; color-scheme: dark; }
+
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; padding-inline: 16px; padding-block: 0; word-break: keep-all; overflow-wrap: break-word; }
+.app { max-width: 520px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; gap: 18px; padding-block: 20px 28px; }
+
+/* language toggle */
+.lang { display: inline-flex; border: 1.5px solid var(--line); border-radius: 999px; padding: 3px; background: var(--paper); }
+.lang button { font: 600 .8rem/1 var(--body); border: 0; background: transparent; color: var(--muted); padding: 7px 11px; border-radius: 999px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+/* cover */
+.cover { flex: 1; display: flex; flex-direction: column; gap: 28px; justify-content: center; }
+.cover-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.cover-date { font: 600 .78rem/1.3 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums; }
+/* cover: blush glow, floating hearts, a fan of heart playing cards */
+.cover-wrap { position: relative; }
+.cover { position: relative; z-index: 1; }
+.floaters { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; background: radial-gradient(90% 55% at 50% 38%, var(--blush), transparent 75%); }
+.floaters svg, .burst { position: absolute; fill: var(--c); }
+.floaters .critter { position: absolute; bottom: -40px; animation: floatUp var(--d) linear var(--delay) infinite; opacity: 0; }
+.floaters svg { bottom: -40px; animation: floatUp var(--d) linear var(--delay) infinite; opacity: 0; }
+@keyframes floatUp {
+  0% { transform: translate(0, 0) rotate(var(--r)) scale(.6); opacity: 0; }
+  12% { opacity: var(--o); }
+  50% { transform: translate(var(--x), -55vh) rotate(calc(var(--r) * -1)) scale(1); }
+  88% { opacity: var(--o); }
+  100% { transform: translate(0, -110vh) rotate(var(--r)) scale(.8); opacity: 0; }
+}
+.burst { width: 22px; height: 22px; pointer-events: none; z-index: 5; animation: pop .9s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes pop { 0% { transform: translate(-50%,-50%) scale(.3); opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1) rotate(var(--r)); opacity: 0; } }
+
+.fan-zone { position: relative; max-width: 360px; width: 100%; margin-inline: auto; }
+.fan { position: relative; display: block; height: 215px; margin-inline: auto; width: 100%; max-width: 300px; background: none; border: 0; padding: 0; cursor: pointer; animation: bob 3.2s ease-in-out infinite; }
+.fan > span { position: absolute; left: 50%; bottom: 0; width: 132px; height: 184px; margin-left: -66px; background: var(--paper); border-radius: 18px; box-shadow: var(--shadow); border: 2px solid color-mix(in srgb, var(--c) 35%, transparent); transform-origin: 50% 120%; transition: transform .5s cubic-bezier(.2,.8,.2,1); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; fill: var(--c); color: var(--c);
+  background-image: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--c) 12%, transparent), transparent 65%); }
+.fan > span:nth-child(1) { --c: var(--c-dream); transform: rotate(-24deg); }
+.fan > span:nth-child(2) { --c: var(--c-wyr); transform: rotate(-9deg); }
+.fan > span:nth-child(3) { --c: var(--c-warm); transform: rotate(7deg); }
+.fan > span:nth-child(4) { --c: var(--c-us); transform: rotate(21deg); }
+.fan:hover > span:nth-child(1), .fan:focus-visible > span:nth-child(1) { transform: rotate(-30deg); }
+.fan:hover > span:nth-child(2) { transform: rotate(-12deg); }
+.fan:hover > span:nth-child(4), .fan:focus-visible > span:nth-child(4) { transform: rotate(27deg) translateY(-6px); }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.pip { position: absolute; display: flex; flex-direction: column; align-items: center; font: 700 .9rem/1 var(--display); gap: 1px; }
+.pip svg { width: 13px; height: 13px; }
+.pip.tl { top: 9px; left: 10px; }
+.pip.br { bottom: 9px; right: 10px; transform: rotate(180deg); }
+.mid { width: 52px; height: 52px; }
+.mid.big { width: 64px; height: 64px; }
+.duo, .trio { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.duo svg { width: 34px; height: 34px; }
+.duo svg:last-child { transform: rotate(180deg); }
+.trio svg { width: 28px; height: 28px; }
+.trio svg:nth-child(2) { transform: rotate(-12deg) scale(1.15); }
+.beat { animation: beat 1.4s ease-in-out infinite; transform-origin: 50% 60%; }
+@keyframes beat { 0%, 60%, 100% { transform: scale(1); } 15% { transform: scale(1.18); } 30% { transform: scale(.96); } 45% { transform: scale(1.1); } }
+
+.names { font-family: var(--display); font-weight: 800; font-size: clamp(3rem, 15vw, 4.6rem); line-height: .95; letter-spacing: -.02em; text-align: center; display: flex; align-items: center; justify-content: center; gap: .1em; }
+.names .amp { width: .62em; height: .62em; fill: var(--accent); flex: none; }
+.start { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.start svg { width: 18px; height: 18px; fill: currentColor; }
+@media (prefers-reduced-motion: reduce) { .fan, .beat, .floaters svg, .floaters .critter { animation: none; } .floaters svg, .floaters .critter { display: none; } }
+.title-sub { font-family: var(--display); font-size: clamp(1.25rem, 5vw, 1.6rem); text-align: center; margin-top: 10px; }
+.title-sub small { display: block; font-family: var(--body); font-size: .95rem; color: var(--muted); margin-top: 8px; }
+.cover .btn.primary { padding: 18px; font-size: 1.25rem; }
+
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.logo { font-family: var(--display); font-weight: 800; font-size: 1.35rem; letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 0; }
+.logo .amp { color: var(--accent); }
+.head-right { display: flex; align-items: center; gap: 10px; }
+.count { font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 600 .8rem/1 var(--body); border: 1.5px solid var(--line); background: transparent; color: var(--muted); padding: 8px 11px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background .15s, color .15s, border-color .15s; }
+.chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); opacity: .45; }
+.chip[aria-pressed="true"] { border-color: var(--c); color: var(--ink); background: color-mix(in srgb, var(--c) 14%, transparent); }
+.chip[aria-pressed="true"] i { opacity: 1; }
+.chip:focus-visible, button:focus-visible, input:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; }
+
+.stage { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 360px; perspective: 1200px; }
+.card { position: relative; background: var(--paper); border-radius: 22px; box-shadow: var(--shadow); padding: 26px 24px 22px; min-height: 340px; display: flex; flex-direction: column; gap: 18px; border-top: 8px solid var(--c, var(--accent)); transform-origin: 50% 100%; }
+.card.flip { animation: deal .45s cubic-bezier(.2,.8,.2,1); }
+@keyframes deal { 0% { transform: translateY(18px) rotateX(-14deg) scale(.97); opacity: .3; } 100% { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .card.flip { animation: none; } .fan span { transition: none; } }
+
+.meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cat { font: 700 .72rem/1 var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--c); }
+.turn { font-size: .85rem; color: var(--muted); }
+.turn b { color: var(--ink); font-weight: 600; }
+.q { font-family: var(--display); font-weight: 700; font-size: clamp(1.6rem, 6.5vw, 2.2rem); line-height: 1.18; letter-spacing: -.015em; text-wrap: balance; flex: 1; display: flex; align-items: center; min-width: 0; }
+html[lang="ko"] .q { font-weight: 400; letter-spacing: 0; line-height: 1.3; }
+.nudge { font-size: .9rem; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 14px; }
+.nudge b { color: var(--ink); font-weight: 600; }
+
+.controls { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: stretch; }
+.btn { font: 600 1rem/1 var(--body); border-radius: 16px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); padding: 16px; cursor: pointer; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-family: var(--display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .4; cursor: default; }
+
+.players { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: .85rem; color: var(--muted); }
+.players label { display: flex; align-items: center; gap: 6px; flex: 1 1 140px; min-width: 0; white-space: nowrap; }
+.players input { font: 500 .95rem var(--body); color: var(--ink); background: var(--paper); border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 10px; width: 100%; min-width: 0; }
+.foot { font-size: .8rem; color: var(--muted); text-align: center; line-height: 1.5; }
+.foot kbd { font-family: var(--body); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="h" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></symbol>
+</svg>
+
+<div class="app cover-wrap" id="coverView">
+  <div class="floaters" id="floaters" aria-hidden="true"></div>
+  <div class="cover">
+    <div class="cover-top">
+      <span class="cover-date" id="coverDate"></span>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="ko">한국어</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+    <div class="fan-zone">
+    <button class="fan" id="fan" type="button" aria-label="Hearts">
+      <span><b class="pip tl">A<svg><use href="#h"/></svg></b><svg class="mid"><use href="#h"/></svg><b class="pip br">A<svg><use href="#h"/></svg></b></span>
+      <span><b class="pip tl">2<svg><use href="#h"/></svg></b><span class="duo"><svg><use href="#h"/></svg><svg><use href="#h"/></svg></span><b class="pip br">2<svg><use href="#h"/></svg></b></span>
+      <span><b class="pip tl">3<svg><use href="#h"/></svg></b><span class="trio"><svg><use href="#h"/></svg><svg><use href="#h"/></svg><svg><use href="#h"/></svg></span><b class="pip br">3<svg><use href="#h"/></svg></b></span>
+      <span><b class="pip tl">♡</b><svg class="mid big beat"><use href="#h"/></svg><b class="pip br">♡</b></span>
+    </button>
+    </div>
+    <div>
+      <div class="names">재익<svg class="amp beat"><use href="#h"/></svg>소은</div>
+      <div class="title-sub" id="coverTitle"></div>
+    </div>
+    <button class="btn primary start" id="start"></button>
+  </div>
+</div>
+
+<div class="app" id="gameView" hidden>
+  <header>
+    <button class="logo" id="home" aria-label="Back to cover">재익 <span class="amp">&amp;</span> 소은</button>
+    <div class="head-right">
+      <span class="count" id="count"></span>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="ko">한</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="chips" id="chips" role="group" aria-label="Topics"></div>
+
+  <div class="stage">
+    <article class="card" id="card" aria-live="polite">
+      <div class="meta">
+        <span class="cat" id="cat"></span>
+        <span class="turn" id="turn"></span>
+      </div>
+      <div class="q" id="q"></div>
+      <div class="nudge" id="nudge"></div>
+    </article>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="back" aria-label="Previous question">←</button>
+    <button class="btn primary" id="draw"></button>
+    <button class="btn" id="skip"></button>
+  </div>
+
+  <div class="players">
+    <label for="p1"><span id="l1"></span> <input id="p1" maxlength="20"></label>
+    <label for="p2"><span id="l2"></span> <input id="p2" maxlength="20"></label>
+  </div>
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+const CATS = {
+  warm: { en: "Warm-up", ko: "설렘 워밍업", color: "var(--c-warm)", qs: [
+    ["What's your idea of a cozy date?", "아늑한 데이트라고 하면 어떤 게 떠올라요?"],
+    ["Café date or walk date?", "카페 데이트가 좋아요, 산책 데이트가 좋아요?"],
+    ["Is there a date spot in this city you've always wanted to try?", "이 도시에서 꼭 가보고 싶었던 데이트 장소 있어요?"],
+    ["Do you like planning dates, or being surprised?", "데이트 계획 짜는 게 좋아요, 깜짝 계획 받는 게 좋아요?"],
+    ["What's your favorite thing to eat on a date?", "데이트할 때 먹기 좋아하는 음식은요?"],
+    ["What song would you play on a drive together?", "같이 드라이브하면 틀고 싶은 노래는요?"],
+    ["What's the cutest couple moment you've ever seen?", "지금까지 본 커플 중에 제일 귀여웠던 모습은요?"],
+    ["Matching couple items: yes or no?", "커플템, 찬성이에요 반대예요?"],
+    ["Is there a café you'd want to take someone you like?", "좋아하는 사람 데려가고 싶은 카페 있어요?"],
+    ["How would you spend an evening with someone you like?", "좋아하는 사람이랑 저녁 시간을 보낸다면 뭐 하고 싶어요?"],
+    ["Date day: rain or snow?", "데이트하는 날, 비 오는 날 vs 눈 오는 날?"],
+    ["What dessert would you want to share?", "같이 나눠 먹고 싶은 디저트는요?"],
+    ["Which season feels the most romantic to you?", "제일 로맨틱하게 느껴지는 계절은요?"],
+    ["What small moment on a date makes you smile?", "데이트할 때 나를 웃게 만드는 작은 순간은요?"],
+    ["Picnic, exhibition, or night market?", "피크닉, 전시회, 야시장 중에 고르면?"],
+    ["Do you like long phone calls at night?", "밤에 길게 통화하는 거 좋아해요?"],
+    ["How would you spend a lazy Saturday with someone?", "누군가와 느긋한 토요일을 보낸다면 뭐 하고 싶어요?"],
+    ["Photo booth: love it? Who picks the poses?", "인생네컷 좋아해요? 포즈는 누가 정해요?"],
+    ["What's a sweet text you'd love to get?", "받으면 설렐 것 같은 문자는요?"],
+    ["What's the best part of an autumn date?", "가을 데이트의 제일 좋은 점은요?"]
+  ]},
+  know: { en: "Getting to know you", ko: "알아가기", color: "var(--c-know)", qs: [
+    ["What were you like when you had a crush in school?", "학교 다닐 때 짝사랑하면 어떤 스타일이었어요?"],
+    ["When do you feel most understood by someone?", "언제 '이 사람이 날 알아주는구나' 느껴요?"],
+    ["What do your friends think you'd be like in a relationship?", "친구들은 내가 연애하면 어떤 사람일 거라고 해요?"],
+    ["What do you do without realizing when you really like someone?", "누군가를 정말 좋아하면 나도 모르게 하는 행동이 있어요?"],
+    ["When you miss someone, do you text or call?", "보고 싶을 때 문자파예요, 전화파예요?"],
+    ["How do you show love: words, time, gifts, helping, or hugs?", "마음을 표현할 때 말, 함께하는 시간, 선물, 도움, 스킨십 중 어떤 편이에요?"],
+    ["And how do you most like to receive love?", "반대로 어떤 방식으로 사랑받을 때 제일 좋아요?"],
+    ["What's a quirk of yours someone only learns by dating you?", "연애해봐야 알 수 있는 나만의 특이한 점은요?"],
+    ["What's your family like? Who are you closest to?", "가족은 어떤 분위기예요? 누구랑 제일 친해요?"],
+    ["How do you act when you're shy?", "부끄러울 때 어떻게 행동해요?"],
+    ["What do you need when you're tired or upset?", "지치거나 속상할 때 필요한 게 뭐예요?"],
+    ["What are you like once you're comfortable with someone?", "편해진 사람 앞에서는 어떤 모습이에요?"],
+    ["How would your parents describe you?", "부모님은 나를 어떤 사람이라고 하실까요?"],
+    ["What small thing can ruin your mood?", "기분을 확 망치는 작은 일은요?"],
+    ["What small thing can make your whole day?", "하루를 통째로 좋게 만드는 작은 일은요?"],
+    ["How do you handle it when you disagree with someone close?", "가까운 사람이랑 의견이 다를 때 어떻게 하는 편이에요?"],
+    ["Planner or go-with-the-flow?", "계획파예요, 즉흥파예요?"],
+    ["What does a perfect day off look like for you?", "완벽한 쉬는 날은 어떤 모습이에요?"],
+    ["What are you proud of that you don't talk about much?", "잘 말은 안 하지만 스스로 뿌듯한 게 있어요?"],
+    ["What instantly makes you feel calm?", "바로 마음이 편해지는 게 뭐예요?"],
+    ["What's something you're a little nerdy about?", "살짝 덕후처럼 빠져 있는 게 있어요?"],
+    ["What's something you're really good at that people wouldn't guess?", "사람들은 잘 모르는데 사실 엄청 잘하는 게 있어요?"],
+    ["What's your favorite thing about yourself?", "내가 나에 대해 제일 좋아하는 점은요?"],
+    ["What habit are you trying to build right now?", "요즘 만들려고 하는 습관이 있어요?"],
+    ["What's your most unpopular opinion?", "남들은 동의 안 할 것 같은 나만의 의견 있어요?"]
+  ]},
+  wyr: { en: "Would you rather", ko: "밸런스 게임", color: "var(--c-wyr)", qs: [
+    ["A handwritten letter or a surprise gift?", "손편지 받기 vs 깜짝 선물 받기?"],
+    ["Stay-in date or go-out date?", "집콕 데이트 vs 밖에서 데이트?"],
+    ["A partner who's funny or a partner who's thoughtful?", "웃긴 연인 vs 세심한 연인?"],
+    ["Text every day or meet up often?", "매일 연락 vs 자주 만나기?"],
+    ["Beach sunset date or city night-view date?", "바닷가 노을 데이트 vs 도시 야경 데이트?"],
+    ["Plan every date or be surprised every time?", "매번 데이트 계획하기 vs 매번 깜짝 데이트 받기?"],
+    ["Cook together or go to a great restaurant?", "같이 요리하기 vs 맛집 가기?"],
+    ["A long talk on a bench or a fun activity?", "벤치에서 긴 대화 vs 신나는 액티비티?"],
+    ["Know everything your partner thinks, or have them always know how you feel?", "연인 속마음 다 알기 vs 내 마음을 연인이 다 알아주기?"],
+    ["First trip together: mountains or sea?", "첫 여행으로 산 vs 바다?"],
+    ["Holding hands or walking arm in arm?", "손잡고 걷기 vs 팔짱 끼고 걷기?"],
+    ["Lots of couple photos or lots of couple items?", "커플 사진 많이 vs 커플템 많이?"],
+    ["A good-morning text or a good-night call?", "아침 인사 문자 vs 밤 인사 전화?"],
+    ["Always pick the restaurant or always pick the movie?", "맨날 식당 고르기 vs 맨날 영화 고르기?"],
+    ["Rainy day indoors or sunny day outside?", "비 오는 날 실내 데이트 vs 맑은 날 야외 데이트?"],
+    ["A partner who sings to you or one who draws you?", "노래 불러주는 연인 vs 그림 그려주는 연인?"],
+    ["Relive our first date or skip ahead to our tenth?", "첫 데이트 다시 하기 vs 열 번째 데이트로 건너뛰기?"],
+    ["Christmas date or birthday date?", "크리스마스 데이트 vs 생일 데이트?"],
+    ["Hiking date or bookstore date?", "등산 데이트 vs 서점 데이트?"],
+    ["Show all your playlists or all your photos?", "내 플레이리스트 다 공개 vs 사진첩 다 공개?"],
+    ["One big romantic gesture or lots of small sweet things?", "큰 이벤트 한 번 vs 작고 다정한 일 여러 번?"],
+    ["Slow-burn love or love at first sight?", "천천히 스며드는 사랑 vs 첫눈에 반하는 사랑?"],
+    ["Always a little late, or always the one waiting?", "매번 조금 늦는 사람 vs 매번 기다리는 사람?"],
+    ["A partner with the same hobbies or different ones?", "취미가 같은 연인 vs 취미가 다른 연인?"]
+  ]},
+  story: { en: "Tell me a story", ko: "썰 풀기", color: "var(--c-story)", qs: [
+    ["Tell me about your first crush.", "첫 짝사랑 이야기 해줘요."],
+    ["How did your parents meet?", "부모님은 어떻게 만나셨어요?"],
+    ["What's the most romantic thing you've ever seen someone do?", "누가 하는 걸 본 것 중 가장 로맨틱했던 일은요?"],
+    ["Tell me about a time you were really nervous to talk to someone.", "누구한테 말 걸기 엄청 떨렸던 적 얘기해 줘요."],
+    ["What's the best surprise anyone has planned for you?", "누가 해준 깜짝 이벤트 중 최고는요?"],
+    ["What's the most embarrassing thing you've done in front of a crush?", "좋아하는 사람 앞에서 했던 제일 민망한 일은요?"],
+    ["What's a love story you love, from a book, a movie, or real life?", "좋아하는 사랑 이야기 있어요? 책, 영화, 실화 다 좋아요."],
+    ["Tell me a friend's love story you watched happen.", "옆에서 지켜본 친구의 연애 이야기 해줘요."],
+    ["What's the sweetest thing a family member has done for you?", "가족이 해준 일 중 제일 다정했던 건요?"],
+    ["As a kid, what did you think love was?", "어렸을 때는 사랑이 뭐라고 생각했어요?"],
+    ["What did you do on our first date day before you met me?", "첫 데이트 날, 나 만나기 전에 뭐 했어요?"],
+    ["What's a letter or message someone sent you that you still remember?", "아직도 기억에 남는 편지나 메시지 있어요?"],
+    ["Is there a date idea you saw somewhere and secretly wanted to try?", "어디서 보고 몰래 해보고 싶었던 데이트 아이디어 있어요?"],
+    ["What's the best trip you've ever been on?", "지금까지 간 여행 중 최고는 어디였어요?"],
+    ["Tell me about a time you laughed so hard you cried.", "눈물 날 정도로 웃었던 적 얘기해 줘요."],
+    ["Tell me about a moment you felt really proud of yourself.", "스스로 정말 뿌듯했던 순간 얘기해 줘요."],
+    ["What's the best birthday you've ever had?", "최고의 생일은 언제였어요?"],
+    ["What's the story behind your name?", "이름에 얽힌 이야기가 있어요?"],
+    ["What's the most spontaneous thing you've ever done?", "지금까지 한 일 중 가장 즉흥적이었던 건 뭐예요?"],
+    ["Tell me about a time a stranger was really kind to you.", "모르는 사람이 정말 친절하게 대해줬던 기억 있어요?"]
+  ]},
+  dream: { en: "Dreams & plans", ko: "꿈과 계획", color: "var(--c-dream)", qs: [
+    ["What does your dream future home feel like?", "꿈꾸는 미래의 집은 어떤 분위기예요?"],
+    ["Where would you love to travel with someone special?", "특별한 사람이랑 꼭 가보고 싶은 여행지는요?"],
+    ["Picture a happy relationship five years in. What does it look like?", "5년 뒤의 행복한 관계를 상상해보면 어떤 모습이에요?"],
+    ["What traditions do you want in your own family someday?", "나중에 내 가정에서 만들고 싶은 전통이 있어요?"],
+    ["What's on your bucket list that you'd want to do with a partner?", "연인이랑 같이 하고 싶은 버킷리스트가 있어요?"],
+    ["What dream would you love someone to cheer you on for?", "누가 옆에서 응원해 줬으면 하는 꿈이 있어요?"],
+    ["What would a perfect anniversary look like?", "완벽한 기념일은 어떤 모습이에요?"],
+    ["What city would you love to live in with someone you love?", "사랑하는 사람이랑 살아보고 싶은 도시는요?"],
+    ["What would you want to learn together with a partner?", "연인이랑 같이 배워보고 싶은 게 있어요?"],
+    ["What kind of couple do you hope to be when you're old?", "나이 들어서 어떤 커플이 되고 싶어요?"],
+    ["Someday: a big wedding or a small one?", "언젠가 결혼한다면 큰 결혼식 vs 작은 결혼식?"],
+    ["What does your dream Sunday look like a few years from now?", "몇 년 뒤 꿈꾸는 일요일은 어떤 모습이에요?"],
+    ["What would you want a future partner to be proud of you for?", "미래의 연인이 나를 자랑스러워했으면 하는 점은요?"],
+    ["Where do you see yourself living in ten years?", "10년 뒤엔 어디서 살고 있을 것 같아요?"],
+    ["What goal are you working toward right now?", "지금 향해 가고 있는 목표가 있어요?"],
+    ["What does success mean to you?", "성공이란 뭐라고 생각해요?"],
+    ["What kind of person do you want to be when you're old?", "나이 들면 어떤 사람이 되고 싶어요?"],
+    ["If money didn't matter, what would you do every day?", "돈 걱정이 없다면 매일 뭐 하면서 살고 싶어요?"],
+    ["What would your ideal weekend look like five years from now?", "5년 뒤의 이상적인 주말은 어떤 모습일까요?"],
+    ["What's a small dream you could actually make happen this year?", "올해 안에 실제로 이룰 수 있는 작은 꿈은요?"],
+    ["What's one thing you want to do before this year ends?", "올해가 끝나기 전에 꼭 하고 싶은 거 하나는요?"],
+    ["If you could live abroad for a year, where would you go?", "1년 동안 해외에서 살 수 있다면 어디서 살고 싶어요?"],
+    ["What project would you love to start someday?", "언젠가 꼭 시작해보고 싶은 프로젝트 있어요?"],
+    ["What adventure would you say yes to if someone asked tomorrow?", "누가 내일 당장 떠나자고 하면 바로 따라갈 모험은요?"],
+    ["What would you try if you knew you couldn't fail?", "절대 실패하지 않는다면 뭘 해보고 싶어요?"]
+  ]},
+  deep: { en: "A little deeper", ko: "조금 더 깊게", color: "var(--c-deep)", qs: [
+    ["What does being a good partner mean to you?", "좋은 연인이란 어떤 사람이라고 생각해요?"],
+    ["How do you want to be loved?", "어떻게 사랑받고 싶어요?"],
+    ["How did your family show love when you were growing up?", "어릴 때 가족들은 사랑을 어떻게 표현했어요?"],
+    ["What makes you trust someone?", "어떤 사람한테 믿음이 가요?"],
+    ["What makes you feel safe with someone?", "어떤 사람 옆에서 마음이 편하고 안전하다고 느껴요?"],
+    ["What makes you feel respected?", "어떤 때 존중받는다고 느껴요?"],
+    ["What does commitment mean to you?", "헌신한다는 건 어떤 의미라고 생각해요?"],
+    ["How do you know when you truly like someone?", "누군가를 진짜 좋아한다는 건 어떻게 알아요?"],
+    ["What's something you've learned from a past friendship or relationship?", "지난 관계에서, 친구 관계도 좋아요, 배운 게 있어요?"],
+    ["Is there a fear you have about relationships?", "관계에 대해 갖고 있는 두려움이 있어요?"],
+    ["When we disagree someday, how would you want us to work it out?", "언젠가 우리가 의견이 다르면 어떻게 풀었으면 좋겠어요?"],
+    ["What should I know before we get closer?", "더 가까워지기 전에 내가 알아줬으면 하는 게 있어요?"],
+    ["What kind of silence feels comfortable to you?", "어떤 침묵은 편하게 느껴져요?"],
+    ["What do people usually get wrong about you at first?", "사람들이 처음에 나에 대해 자주 오해하는 건 뭐예요?"],
+    ["When do you feel most like yourself?", "언제 가장 나답다고 느껴요?"],
+    ["What do you wish more people understood about you?", "사람들이 나에 대해 좀 더 알아줬으면 하는 게 있어요?"],
+    ["How do you act when you're stressed, and what actually helps?", "스트레스 받으면 어떻게 변해요? 실제로 도움이 되는 건 뭐예요?"],
+    ["What was a hard season for you, and what got you through it?", "힘들었던 시기가 있었다면, 그때 버티게 해준 건 뭐였어요?"],
+    ["What do you value most in the people around you?", "주변 사람들에게서 가장 소중하게 여기는 건 뭐예요?"],
+    ["What's something you're still figuring out?", "아직 고민하고 있는 게 있어요?"],
+    ["What's the kindest thing someone has done for you?", "누군가 나에게 해준 가장 다정한 일은요?"],
+    ["What do you need more of in your life right now?", "지금 내 삶에 더 필요한 게 뭐예요?"],
+    ["What's a question you wish people asked you more often?", "사람들이 더 자주 물어봐 줬으면 하는 질문 있어요?"],
+    ["When did you first feel like you'd grown up?", "'나 이제 어른이 됐구나' 느낀 순간은 언제예요?"],
+    ["What's a memory you keep going back to?", "자꾸 떠올리게 되는 기억이 있어요?"],
+    ["Is there something that's hard for you to say out loud? Only if you're comfortable.", "소리 내서 말하기 어려운 게 있어요? 괜찮을 때만요."],
+    ["What does happiness look like for you, day to day?", "일상 속 행복은 어떤 모습이에요?"],
+    ["What part of your personality took you the longest to accept?", "내 성격 중에 받아들이는 데 제일 오래 걸린 부분은요?"],
+    ["What are you most afraid of losing?", "잃을까 봐 가장 두려운 게 뭐예요?"],
+    ["If your life had chapters, what would this one be called?", "인생을 챕터로 나눈다면 지금 챕터의 제목은 뭘까요?"]
+  ]},
+  us: { en: "Just us", ko: "우리 둘", color: "var(--c-us)", qs: [
+    ["What was your first impression of me?", "나에 대한 첫인상은 어땠어요?"],
+    ["What made you say yes to this date?", "오늘 데이트에 왜 좋다고 했어요?"],
+    ["What's something you'd like to know about me?", "나에 대해 알고 싶은 거 있어요?"],
+    ["What's your idea of a perfect date?", "완벽한 데이트는 어떤 거라고 생각해요?"],
+    ["What's the best date you've ever heard of, even if not yours?", "본인 얘기 아니어도, 들어본 데이트 중 최고는요?"],
+    ["What do you usually notice first about someone?", "사람을 만나면 제일 먼저 눈에 들어오는 건 뭐예요?"],
+    ["What's a green flag for you?", "이런 사람이면 좋다 싶은 그린 플래그는요?"],
+    ["What's a red flag that's actually kind of funny?", "웃기지만 확실한 레드 플래그는요?"],
+    ["If we went on a trip together, where should we go?", "우리가 같이 여행 간다면 어디로 갈까요?"],
+    ["What should we do on a second date?", "두 번째 데이트에선 뭐 할까요?"],
+    ["What's one thing we have in common so far?", "지금까지 찾은 우리 공통점 하나는요?"],
+    ["What would you want to show me in your favorite neighborhood?", "좋아하는 동네에서 나한테 보여주고 싶은 곳은요?"],
+    ["What's a song you'd put on a playlist for tonight?", "오늘 밤 플레이리스트에 넣을 노래 하나는요?"],
+    ["If tonight were a movie, what genre would it be?", "오늘이 영화라면 장르는 뭘까요?"],
+    ["What's something you think I'd be surprisingly good at?", "내가 의외로 잘할 것 같은 건 뭐예요?"],
+    ["What's the most attractive quality a person can have?", "사람에게서 가장 매력적인 점은 뭐라고 생각해요?"],
+    ["Guess my favorite food. Then I'll guess yours.", "내가 좋아하는 음식 맞혀봐요. 그다음엔 내가 맞혀볼게요."],
+    ["What's a question you've been wanting to ask me?", "나한테 물어보고 싶었던 질문 있어요?"],
+    ["What's one thing you'd want to try together?", "같이 해보고 싶은 거 하나 있다면요?"],
+    ["Rate this date so far, out of 10. Be honest.", "지금까지 데이트 몇 점이에요? 10점 만점, 솔직하게."],
+    ["Guess my hobby.", "내 취미가 뭘 것 같아요? 맞혀봐요."],
+    ["Is there a place you haven't gone because you had no one to go with?", "같이 갈 사람이 없어서 못 가본 곳 있어요?"],
+    ["Pick a dessert for us to share after this.", "이따 같이 먹을 디저트 하나 골라봐요."],
+    ["What's one new thing you learned about me tonight?", "오늘 나에 대해 새로 알게 된 거 하나는요?"],
+    ["Daytime dates or nighttime dates?", "낮 데이트가 좋아요, 밤 데이트가 좋아요?"],
+    ["If we took one photo today, what should it be?", "오늘 사진 한 장 남긴다면 어떤 사진 찍을까요?"],
+    ["If we were a team, what would our team name be?", "우리가 한 팀이라면 팀 이름은 뭘로 할까요?"],
+    ["What's a movie we should watch together?", "같이 보고 싶은 영화 있어요?"],
+    ["What's your texting style: long messages or short ones?", "연락 스타일은 어때요? 길게 보내는 편, 짧게 보내는 편?"],
+    ["Guess my MBTI.", "내 MBTI 맞혀봐요."],
+    ["What's made you laugh most tonight so far?", "오늘 지금까지 제일 웃겼던 순간은요?"],
+    ["What song makes you feel butterflies?", "설렐 때 생각나는 노래 있어요?"],
+    ["If we cooked something together, what should we make?", "같이 요리한다면 뭘 만들어볼까요?"],
+    ["Where should we go right after this?", "이거 끝나고 바로 어디 갈까요?"],
+    ["Honestly, were you nervous before today?", "솔직히 오늘 오기 전에 긴장했어요?"],
+    ["What surprised you most about our first date?", "첫 데이트에서 제일 의외였던 건 뭐예요?"],
+    ["What did you think about on the way home after our first date?", "첫 데이트 끝나고 집에 가는 길에 무슨 생각 했어요?"],
+    ["Is there something you wanted to say last time but didn't?", "지난번에 말하려다 못 한 거 있어요?"],
+    ["What should I know about how you like to talk and text?", "대화나 연락 스타일에 대해 내가 알아두면 좋은 게 있어요?"],
+    ["What's your favorite thing we've talked about so far?", "지금까지 우리 대화 중에 제일 좋았던 주제는요?"],
+    ["How do you like to be cheered up when you're down?", "기분이 처질 때 어떻게 위로받는 걸 좋아해요?"],
+    ["What's a small thing someone can do that makes you feel cared for?", "누가 어떤 작은 걸 해주면 챙김받는 느낌이 들어요?"],
+    ["What's a little tradition you'd want to have with someone you date?", "연애하면 같이 만들고 싶은 작은 전통이 있어요?"],
+    ["What would a perfect third date look like?", "완벽한 세 번째 데이트는 어떤 모습일까요?"],
+    ["Is there a song that already reminds you of me?", "벌써 나 생각나게 하는 노래 있어요?"]
+  ]},
+  scen: { en: "What if…", ko: "만약에", color: "var(--c-scen)", qs: [
+    ["We're locked in a convenience store overnight. What's the plan?", "우리가 밤새 편의점에 갇혔어요. 계획이 뭐예요?"],
+    ["We get two free plane tickets. It leaves tonight and the destination is random. Do we go?", "둘이 쓸 공짜 비행기 표가 생겼어요. 오늘 밤 출발, 목적지는 랜덤. 갈까요?"],
+    ["Our story becomes a movie. What's the title, and who plays us?", "우리 이야기가 영화가 된다면 제목은요? 우리 역은 누가 맡을까요?"],
+    ["You plan one perfect date day with no budget limit. What's the schedule?", "예산 무제한으로 하루 데이트를 짠다면 일정은요?"],
+    ["It starts raining and we have only one umbrella. What happens?", "비가 오는데 우산이 하나뿐이에요. 어떻게 할까요?"],
+    ["You write a letter to open on our 100th day. What's the first line?", "100일에 열어볼 편지를 쓴다면 첫 문장은요?"],
+    ["You have to cook me dinner tomorrow. What's the menu?", "내일 나한테 저녁을 해줘야 해요. 메뉴는요?"],
+    ["We get a free weekend trip anywhere in Korea. Where to?", "국내 어디든 주말여행이 공짜예요. 어디로 갈까요?"],
+    ["We swap bodies for a day. What's the first thing you do as me?", "하루 동안 우리 몸이 바뀌었어요. 나로서 제일 먼저 뭐 할 거예요?"],
+    ["You have to give me a nickname right now. What is it?", "지금 당장 나한테 애칭을 지어줘야 해요. 뭐로 할래요?"],
+    ["We're in a K-drama. What cliché scene are we in right now?", "우리가 드라마 속이라면 지금 어떤 클리셰 장면일까요?"],
+    ["We make a time capsule tonight. What three things go in?", "오늘 타임캡슐을 만든다면 뭘 세 개 넣을까요?"],
+    ["You can get a true answer to one question about me. What do you ask?", "나에 대한 질문 하나에 진짜 답을 들을 수 있다면 뭘 물어볼래요?"],
+    ["You get one redo for a moment from our first date. Which moment?", "첫 데이트 중 한 순간을 다시 할 수 있다면 언제로 갈래요?"],
+    ["We open a small shop together. What is it, and who does what?", "우리가 같이 작은 가게를 연다면 뭘 팔고, 누가 뭘 맡을까요?"],
+    ["We're on a variety show together. Which one, and who wins?", "우리 둘이 같이 예능에 나간다면 어떤 프로그램이고, 누가 이길까요?"],
+    ["You can send your 15-year-old self one sentence about love. What is it?", "15살의 나에게 사랑에 대해 한 문장 보낼 수 있다면 뭐라고 할래요?"],
+    ["We're stranded on an island with three things, no phones. What do we bring?", "우리 둘이 무인도에 세 가지만 가져갈 수 있어요. 폰은 안 돼요. 뭘 가져갈까요?"],
+    ["We live inside one movie's world together for a week. Which one?", "일주일 동안 둘이 영화 속 세계 하나에서 산다면 어디로 갈까요?"],
+    ["Your life has a soundtrack. What song is playing right now?", "내 인생에 OST가 있다면 지금 이 순간엔 무슨 노래가 나올까요?"],
+    ["You're 80, telling your grandkids about your twenties. What story do you tell?", "80살이 돼서 손주들한테 20대 이야기를 해준다면 어떤 얘기를 하고 싶어요?"],
+    ["You get three wishes, but none can be for yourself. What are they?", "소원 세 개를 들어준대요. 단, 나를 위한 소원은 안 돼요. 뭘 빌래요?"],
+    ["Everyone can hear your thoughts for one day, including me. How does it go?", "하루 동안 나를 포함해 모두가 내 속마음을 들을 수 있어요. 어떻게 될까요?"],
+    ["You can see one year into the future for ten seconds. Do you look?", "1년 뒤 미래를 10초 동안 볼 수 있다면 볼래요, 말래요?"],
+    ["We have to plan a surprise for a friend's birthday together. What do we do?", "둘이 같이 친구 생일 깜짝 이벤트를 준비해야 해요. 뭘 할까요?"]
+  ]},
+  dare: { en: "Dares", ko: "미션", color: "var(--c-dare)", dare: true, qs: [
+    ["Hold hands and take a walk together for five minutes.", "손잡고 5분 동안 같이 걷기."],
+    ["Walk arm in arm to wherever you go next.", "다음 장소까지 팔짱 끼고 걷기."],
+    ["Hold hands until the next card is done.", "다음 카드 끝날 때까지 손잡고 있기."],
+    ["Tell the other person the moment you first thought, 'I like this person.'", "처음 '이 사람 좋다' 싶었던 순간 말해주기."],
+    ["Look them in the eyes and give three specific compliments.", "눈 마주치고 구체적인 칭찬 세 가지 해주기."],
+    ["Take a sweet couple selfie together.", "둘이 다정하게 커플 셀카 찍기."],
+    ["Share earphones and listen to a song you picked for them.", "이어폰 한 쪽씩 나눠 끼고 상대를 위해 고른 노래 같이 듣기."],
+    ["Write a short note on a napkin or phone memo and hand it over.", "냅킨이나 폰 메모에 짧은 쪽지 써서 건네주기."],
+    ["Hold eye contact for 30 seconds. Whoever smiles first loses.", "30초 동안 눈 마주치기. 먼저 웃는 사람이 지는 거예요."],
+    ["Thank them for one specific thing about today.", "오늘 고마웠던 점 하나 콕 집어서 말해주기."],
+    ["Pick a small gift for them on the way. A convenience store treat counts.", "가는 길에 상대를 위한 작은 선물 하나 고르기. 편의점 간식도 OK."],
+    ["Take a photo of them the way you see them. Full photographer mode.", "내 눈에 보이는 모습 그대로 상대 사진 찍어주기. 작가 모드로."],
+    ["Say a short blessing or word of encouragement for them out loud.", "상대를 위한 축복이나 응원 한마디 소리 내서 해주기."],
+    ["Pray for the other person in one or two sentences.", "상대를 위해 한두 문장으로 짧게 기도해주기."],
+    ["Change their contact name in your phone to something cute, then show them.", "폰에 저장된 상대 이름을 귀엽게 바꾸고 보여주기."],
+    ["Plan our next date in 60 seconds. No take-backs.", "60초 안에 다음 데이트 계획 세우기. 무르기 없음."],
+    ["Make a three-item bucket list for the two of you.", "우리 둘의 버킷리스트 3개 만들기."],
+    ["Share a dessert. Give them the first bite.", "디저트 하나 같이 먹기. 첫 입은 상대한테 먹여주기."],
+    ["Write a sweet two-line name poem with their name.", "상대 이름으로 설레는 이행시 짓기."],
+    ["Find a pretty spot and take a photo of your shadows or your hands together.", "예쁜 곳 찾아서 둘의 그림자나 맞잡은 손 사진 찍기."],
+    ["Sit side by side instead of across from each other for the next ten minutes.", "다음 10분은 마주 보지 말고 나란히 앉기."],
+    ["Tell them what you were most looking forward to about today.", "오늘 데이트에서 제일 기대했던 거 말해주기."],
+    ["Make a three-song playlist for today, together.", "오늘 데이트 플레이리스트 3곡 같이 만들기."],
+    ["Gently fix their hair or collar.", "상대 머리나 옷깃 살짝 정리해주기."],
+    ["Tell them what you like about their smile, laugh, or voice.", "상대 미소, 웃음소리, 목소리 중 좋은 점 하나 말해주기."],
+    ["Set a photo of the two of you as your lock screen for today.", "둘이 찍은 사진으로 오늘 하루 잠금화면 바꾸기."],
+    ["Watch the sunset or the night view together for one minute, no talking.", "1분 동안 말없이 같이 노을이나 야경 보기."],
+    ["Rock-paper-scissors, best of five. The loser treats the winner to dessert.", "가위바위보 5판 3선승. 진 사람이 디저트 사주기."],
+    ["Give them one reason you'd want a third date.", "세 번째 데이트를 하고 싶은 이유 하나 말해주기."],
+    ["Walk them home or to the station at the end of the date.", "데이트 끝나면 집이나 역까지 데려다주기."]
+  ]},
+  faith: { en: "Faith", ko: "믿음", color: "var(--c-faith)", qs: [
+    ["How did you come to faith, or when did it become your own?", "어떻게 신앙을 갖게 됐어요? 아니면 언제 진짜 내 믿음이 됐어요?"],
+    ["Is there a Bible verse that's meant a lot to you lately?", "요즘 마음에 와닿은 말씀 구절 있어요?"],
+    ["What's a prayer that was answered in a way you didn't expect?", "예상 못 한 방식으로 응답받은 기도가 있어요?"],
+    ["What's your church or community like right now?", "지금 다니는 교회나 공동체는 어떤 곳이에요?"],
+    ["What worship song do you keep coming back to?", "자꾸 다시 찾게 되는 찬양 있어요?"],
+    ["When do you feel closest to God?", "언제 하나님이 가장 가깝게 느껴져요?"],
+    ["What's something you're praying about these days?", "요즘 붙들고 있는 기도 제목이 있어요?"],
+    ["Which Bible character do you relate to most?", "성경 인물 중에 제일 공감 가는 사람은 누구예요?"],
+    ["How has your faith changed since you were younger?", "어렸을 때랑 비교해서 신앙이 어떻게 달라졌어요?"],
+    ["What's a question about faith you're still thinking through?", "신앙에 대해 아직 고민 중인 질문이 있어요?"],
+    ["Whose faith really inspires you?", "신앙적으로 정말 본받고 싶은 사람이 있어요?"],
+    ["Has someone around you helped your faith grow? How?", "주변 사람 덕분에 믿음이 자랐던 경험이 있어요?"]
+  ]}
+};
+
+const NUDGES = [
+  ["Ask <b>“why?”</b> after the answer. That's where the good stuff is.", "대답 듣고 <b>“왜요?”</b> 하고 물어봐요. 좋은 얘기는 거기서 나와요."],
+  ["Now flip it: the other person answers too.", "이제 바꿔서, 상대방도 대답해요."],
+  ["Pick one thing from their answer and ask more about it.", "상대 대답에서 하나 골라서 더 물어봐요."],
+  ["No wrong answers. Short is fine, stories are better.", "정답은 없어요. 짧아도 괜찮고, 이야기가 붙으면 더 좋아요."],
+  ["If it sparks a tangent, follow it. The card can wait.", "얘기가 딴 데로 새도 괜찮아요. 카드는 기다려줘요."],
+  ["Share a time you felt the same way.", "나도 비슷하게 느꼈던 때를 얘기해봐요."],
+  ["Try asking <b>“what was that like?”</b>", "<b>“그때 어땠어요?”</b> 하고 물어봐요."],
+  ["Guess their answer before they say it.", "대답 듣기 전에 상대 답을 먼저 맞혀봐요."]
+];
+
+const DARE_NUDGES = [
+  ["Do it now. The other person decides if it counts.", "지금 바로! 성공인지는 상대가 판정해요."],
+  ["Too much? Use Skip. No pressure.", "부담되면 넘기기 눌러도 돼요."],
+  ["Bonus: the other person does it too.", "보너스: 상대도 똑같이 해보기."],
+  ["Take a photo of the moment if you want to remember it.", "기억하고 싶으면 그 순간 사진으로 남겨요."]
+];
+
+const CAT_ORDER = ["deep", "us", "scen", "dare", "dream", "story", "wyr", "faith", "warm", "know"];
+
+const UI = {
+  en: {
+    coverDate: "Fri · Oct 9, 2026",
+    coverTitle: "Date night, Oct 9<small>One card at a time. No awkward silences allowed.</small>",
+    start: "Let's start", draw: "Next question", skip: "Skip",
+    l1: "First up", l2: "Then", p1: "재익", p2: "소은",
+    left: (a, b) => `${a} of ${b} left`,
+    first: n => `<b>${n}</b> goes first`,
+    dare: n => `<b>${n}</b>'s dare`,
+    foot: "Turns swap with every new question. You both answer; the named person just goes first. <kbd>Space</kbd> for next."
+  },
+  ko: {
+    coverDate: "2026. 10. 9 (금) · 한글날",
+    coverTitle: "10월 9일 데이트<small>어색할 틈 없이, 카드 한 장씩 천천히</small>",
+    start: "시작하기", draw: "다음 질문", skip: "넘기기",
+    l1: "먼저", l2: "다음", p1: "재익", p2: "소은",
+    left: (a, b) => `${b}개 중 ${a}개 남음`,
+    first: n => `<b>${n}</b> 먼저`,
+    dare: n => `<b>${n}</b>의 미션`,
+    foot: "질문마다 순서가 바뀌어요. 둘 다 대답하고, 이름 나온 사람이 먼저! <kbd>Space</kbd> 키로 다음 질문."
+  }
+};
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+
+let lang = store.get("tt2-lang", "ko");
+let active = new Set(store.get("tt3-active", CAT_ORDER.filter(k => k !== "warm" && k !== "know")));
+let seen = new Set(store.get("tt4-seen", []));
+let history = [];
+let pos = -1;
+let turn = 0;
+
+const all = Object.entries(CATS).flatMap(([k, c]) => c.qs.map((q, i) => ({ k, i, id: k + i })));
+const L = () => lang === "ko" ? 1 : 0;
+const escapeHtml = s => s.replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+
+function applyLang() {
+  const t = UI[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+  $("coverDate").textContent = t.coverDate;
+  $("coverTitle").innerHTML = t.coverTitle;
+  $("start").innerHTML = `${t.start}<svg aria-hidden="true"><use href="#h"/></svg>`;
+  $("draw").textContent = t.draw;
+  $("skip").textContent = t.skip;
+  $("l1").textContent = t.l1;
+  $("l2").textContent = t.l2;
+  $("p1").placeholder = t.p1; $("p2").placeholder = t.p2;
+  $("foot").innerHTML = t.foot;
+  renderChips(); updateCount();
+  if (pos >= 0) show(history[pos], false);
+}
+
+function renderChips() {
+  const box = $("chips"); box.innerHTML = "";
+  for (const k of CAT_ORDER) {
+    const c = CATS[k];
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button";
+    b.style.setProperty("--c", c.color);
+    b.setAttribute("aria-pressed", active.has(k));
+    b.innerHTML = `<i></i>${c[lang]}`;
+    b.onclick = () => {
+      if (active.has(k) && active.size === 1) return;
+      active.has(k) ? active.delete(k) : active.add(k);
+      store.set("tt3-active", [...active]);
+      renderChips(); updateCount();
+    };
+    box.appendChild(b);
+  }
+}
+
+function pool() { return all.filter(x => active.has(x.k)); }
+function updateCount() {
+  const p = pool(); const left = p.filter(x => !seen.has(x.id)).length;
+  $("count").textContent = UI[lang].left(left, p.length);
+}
+function names() { return [$("p1").value.trim() || "재익", $("p2").value.trim() || "소은"]; }
+
+function show(item, animate = true) {
+  const c = CATS[item.k];
+  const card = $("card");
+  card.style.setProperty("--c", c.color);
+  $("cat").textContent = c[lang];
+  $("q").textContent = c.qs[item.i][L()];
+  $("turn").innerHTML = UI[lang][c.dare ? "dare" : "first"](escapeHtml(names()[item.t]));
+  const nl = c.dare ? DARE_NUDGES : NUDGES;
+  $("nudge").innerHTML = nl[item.n % nl.length][L()];
+  if (animate) { card.classList.remove("flip"); void card.offsetWidth; card.classList.add("flip"); }
+  $("back").disabled = pos <= 0;
+}
+
+function draw(switchTurn = true) {
+  if (pos < history.length - 1) { pos++; show(history[pos]); return; }
+  let p = pool().filter(x => !seen.has(x.id));
+  if (!p.length) { pool().forEach(x => seen.delete(x.id)); p = pool(); }
+  const pick = p[Math.floor(Math.random() * p.length)];
+  seen.add(pick.id); store.set("tt4-seen", [...seen]);
+  if (history.length && switchTurn) turn = 1 - turn;
+  const item = { k: pick.k, i: pick.i, t: turn, n: Math.floor(Math.random() * NUDGES.length) };
+  history.push(item); pos = history.length - 1;
+  show(item); updateCount();
+}
+
+function go(view) {
+  $("coverView").hidden = view !== "cover";
+  $("gameView").hidden = view !== "game";
+  if (view === "game" && pos < 0) draw(true);
+}
+
+document.querySelectorAll(".lang button").forEach(b => b.onclick = () => { lang = b.dataset.lang; store.set("tt2-lang", lang); applyLang(); });
+$("start").onclick = () => go("game");
+$("home").onclick = () => go("cover");
+$("draw").onclick = () => draw(true);
+$("skip").onclick = () => { if (pos < history.length - 1) history.length = pos + 1; draw(false); };
+$("back").onclick = () => { if (pos > 0) { pos--; show(history[pos]); } };
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || $("gameView").hidden) return;
+  if (e.code === "Space" || e.key === "ArrowRight") { e.preventDefault(); draw(true); }
+  if (e.key === "ArrowLeft") $("back").click();
+});
+for (const id of ["p1", "p2"]) {
+  $(id).value = store.get("tt2-" + id, id === "p1" ? "재익" : "소은");
+  $(id).addEventListener("input", () => { store.set("tt2-" + id, $(id).value); if (pos >= 0) show(history[pos], false); });
+}
+
+const HEART_COLORS = ["var(--c-us)", "var(--c-dream)", "var(--accent)", "var(--c-wyr)", "var(--c-warm)"];
+const svgHeart = () => { const el = document.createElementNS("http://www.w3.org/2000/svg", "svg"); el.innerHTML = '<use href="#h"/>'; return el; };
+(function floaters() {
+  const box = $("floaters");
+  ["🐢", "🐰", "🥩", "🐰", "🐢", "🥩"].forEach((em, i) => {
+    const el = document.createElement("span");
+    el.textContent = em; el.className = "critter";
+    el.style.cssText = `left:${8 + i * 15 + Math.random() * 6}%;font-size:${18 + Math.random() * 10}px;--d:${9 + Math.random() * 6}s;--delay:${-Math.random() * 14}s;--x:${(Math.random() * 50 - 25).toFixed(0)}px;--r:${(Math.random() * 30 - 15).toFixed(0)}deg;--o:.85`;
+    box.appendChild(el);
+  });
+  for (let i = 0; i < 16; i++) {
+    const el = svgHeart(), size = 12 + Math.random() * 22;
+    el.style.cssText = `left:${Math.random() * 95}%;width:${size}px;height:${size}px;--c:${HEART_COLORS[i % HEART_COLORS.length]};--d:${7 + Math.random() * 7}s;--delay:${-Math.random() * 14}s;--x:${(Math.random() * 60 - 30).toFixed(0)}px;--r:${(Math.random() * 40 - 20).toFixed(0)}deg;--o:${(.35 + Math.random() * .45).toFixed(2)}`;
+    box.appendChild(el);
+  }
+})();
+$("fan").onclick = e => {
+  const wrap = $("coverView"), r = wrap.getBoundingClientRect();
+  const x = (e.clientX || r.left + r.width / 2) - r.left, y = (e.clientY || r.top + 200) - r.top;
+  for (let i = 0; i < 12; i++) {
+    const el = svgHeart(), a = (i / 12) * Math.PI * 2, d = 60 + Math.random() * 70;
+    el.classList.add("burst");
+    el.style.cssText = `left:${x}px;top:${y}px;--c:${HEART_COLORS[i % HEART_COLORS.length]};--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px;--r:${Math.random() * 60 - 30}deg`;
+    wrap.appendChild(el);
+    setTimeout(() => el.remove(), 950);
+  }
+};
+
+applyLang();
+</script>
+
+</body>
+</html>
